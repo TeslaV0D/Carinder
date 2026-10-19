@@ -51,7 +51,18 @@ supabase/           Migrationen, Seed, Auth-Config
 
 ## Zu mobile.de
 
-Die offizielle [Search-API](https://services.mobile.de/manual/search-api.html) braucht Zugangsdaten, die mobile.de selbst vergibt. Scraping oder Reverse Engineering der privaten API ist für eine öffentliche App keine Option: Es verstößt gegen die AGB, berührt das Datenbankherstellerrecht (§ 87b UrhG) und die Bildrechte der Händler. Deshalb nutzt die App vorerst Demo-Daten. Echte Inserate kommen über einen offiziellen Zugang oder Händler-Partnerschaften.
+**Search-API ([Doku](https://services.mobile.de/manual/search-api.html)).** Sie braucht ein **API-Account**, das der mobile.de-Kundensupport freischaltet (DE: +49 30 81097500 oder Kontaktformular). Einen Sandbox-Account bekommst du per Mail an service@team.mobile.de. Die Anmeldung läuft über HTTP Basic Auth, JSON gibt's über `Accept: application/vnd.de.mobile.api+json`.
+- Pro Suche kommen höchstens 2.000 Treffer, pro Seite höchstens 100.
+- Jede Anzeige liefert `detailPageUrl` und Bilder in 7 Größen.
+- Über **Ad-Stream** (WebSocket) kommen neue und geänderte Anzeigen live rein.
+- Bildrechte, Rate-Limits und Kosten stehen nicht in der Doku, die müssen in der Anfrage geklärt werden.
+- Die Zugangsdaten gehören nur auf den Server (Ingest-Job), nie in die App.
+
+**Kein Login mit mobile.de, kein automatisches Parken.** mobile.de bietet nur Händler- und Partner-APIs an (Seller, Search, Ad-Stream, Insights, Lead). Es gibt kein OAuth und keine API für den Parkplatz von Privatkonten. Die App fragt deshalb nie nach mobile.de-Zugangsdaten. Stattdessen gibt es zwei Brücken:
+- **Detailseite:** „Auf mobile.de ansehen & parken“ öffnet das Inserat in der mobile.de-App (oder im Browser). Dort parkst du das Auto mit einem Tipp.
+- **Garage → Teilen:** Schickt alle Likes als Liste mit Links zu den Inseraten raus.
+
+Scraping oder Reverse Engineering der privaten API ist für eine öffentliche App keine Option: Es verstößt gegen die AGB und berührt das Datenbankherstellerrecht (§ 87b UrhG) sowie die Bildrechte der Händler. Bis ein offizieller Zugang da ist, nutzt die App Demo-Daten.
 
 ## Entwicklung
 

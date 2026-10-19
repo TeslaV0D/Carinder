@@ -17,3 +17,10 @@ export function formatPower(kw: number): string {
 export function vehicleTitle(vehicle: Pick<Vehicle, 'make' | 'model'>): string {
   return `${vehicle.make} ${vehicle.model}`;
 }
+
+export const MOBILE_DE_SOURCE_ID = 'mobilede';
+
+/** mobile.de has no API for its watchlist ("Parkplatz"), so users park the car in the opened listing. */
+export function sourceLinkLabel(vehicle: Pick<Vehicle, 'source'>): string {
+  return vehicle.source === MOBILE_DE_SOURCE_ID ? 'Auf mobile.de ansehen & parken' : 'Original-Inserat ansehen';
+}

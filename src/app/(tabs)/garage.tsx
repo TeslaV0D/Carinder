@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { router } from 'expo-router';
-import { ActivityIndicator, FlatList, Pressable, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, FlatList, Pressable, Share, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedText } from '@/components/themed-text';
@@ -10,6 +10,7 @@ import { BottomTabInset, MaxContentWidth, Spacing, TopTabInset } from '@/constan
 import { queryKeys } from '@/data/query-keys';
 import type { LikedVehicle } from '@/data/repository';
 import { formatMileage, formatPrice, vehicleTitle } from '@/domain/format';
+import { formatGarageShareText } from '@/domain/garage-share';
 import { useTheme } from '@/hooks/use-theme';
 import { useRepository } from '@/providers/repository-provider';
 
@@ -23,9 +24,10 @@ export default function GarageScreen() {
   return (
     <ThemedView style={styles.container}>
       <SafeAreaView style={styles.safeArea} edges={['top']}>
-        <ThemedText type="subtitle" style={styles.heading}>
-          Deine Garage
-        </ThemedText>
+        <View style={styles.header}>
+          <ThemedText type="subtitle">Deine Garage</ThemedText>
+          {data && data.length > 0 && <ShareButton liked={data} />}
+        </View>
         {isLoading ? (
           <ActivityIndicator style={styles.loading} />
         ) : (
@@ -47,6 +49,27 @@ export default function GarageScreen() {
         )}
       </SafeAreaView>
     </ThemedView>
+  );
+}
+
+function ShareButton({ liked }: { liked: LikedVehicle[] }) {
+  const theme = useTheme();
+  const share = () =>
+    Share.share({
+      message: formatGarageShareText(
+        liked.map((entry) => ({ vehicle: entry.vehicle, superlike: entry.direction === 'superlike' })),
+      ),
+    });
+
+  return (
+    <Pressable
+      accessibilityRole="button"
+      onPress={share}
+      style={({ pressed }) => [styles.shareButton, { borderColor: theme.accent }, pressed && styles.pressed]}>
+      <ThemedText type="smallBold" style={{ color: theme.accent }}>
+        Teilen
+      </ThemedText>
+    </Pressable>
   );
 }
 
@@ -91,9 +114,18 @@ const styles = StyleSheet.create({
     maxWidth: MaxContentWidth,
     paddingTop: TopTabInset,
   },
-  heading: {
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     paddingHorizontal: Spacing.three,
     marginBottom: Spacing.two,
+  },
+  shareButton: {
+    borderWidth: 1.5,
+    borderRadius: Spacing.three,
+    paddingHorizontal: Spacing.three,
+    paddingVertical: Spacing.one,
   },
   loading: {
     marginTop: Spacing.five,

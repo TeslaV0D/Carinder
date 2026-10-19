@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import * as Linking from 'expo-linking';
 import { router, useLocalSearchParams } from 'expo-router';
-import { openBrowserAsync } from 'expo-web-browser';
 import { ActivityIndicator, ScrollView, StyleSheet, View } from 'react-native';
 
 import { PrimaryButton } from '@/components/primary-button';
@@ -9,7 +9,7 @@ import { ThemedView } from '@/components/themed-view';
 import { VehiclePhoto } from '@/components/vehicle-photo';
 import { MaxContentWidth, Spacing } from '@/constants/theme';
 import { queryKeys } from '@/data/query-keys';
-import { formatMileage, formatPower, formatPrice, vehicleTitle } from '@/domain/format';
+import { formatMileage, formatPower, formatPrice, sourceLinkLabel, vehicleTitle } from '@/domain/format';
 import { BODY_TYPE_LABELS, FUEL_LABELS, TRANSMISSION_LABELS } from '@/domain/vehicle';
 import { useTheme } from '@/hooks/use-theme';
 import { useRepository } from '@/providers/repository-provider';
@@ -87,7 +87,8 @@ export default function VehicleDetailScreen() {
           </ThemedView>
 
           {sourceUrl ? (
-            <PrimaryButton title="Original-Inserat ansehen" onPress={() => openBrowserAsync(sourceUrl)} />
+            // openURL (not the in-app browser) so the link opens the mobile.de app when installed.
+            <PrimaryButton title={sourceLinkLabel(vehicle)} onPress={() => Linking.openURL(sourceUrl)} />
           ) : (
             <ThemedText type="small" themeColor="textSecondary">
               Demo-Fahrzeug: Es gibt kein echtes Inserat dazu.
